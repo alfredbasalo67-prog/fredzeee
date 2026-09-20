@@ -1,8 +1,5 @@
--- ╔══════════════════════════════════════╗
--- ║        FREDZEE — Ride A Pet          ║
--- ║   ✅ MINIMIZE ✅ BUTTONS ✅ ALL FEATURES ║
--- ╚══════════════════════════════════════╝
-
+-- FREDZEE — FINAL WORKING VERSION
+-- Minimize ✅ Buttons ✅ All Features ✅
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -10,18 +7,13 @@ local CoreGui = game:GetService("CoreGui")
 local LocalPlayer = Players.LocalPlayer
 if not LocalPlayer then return end
 
--- Cleanup old GUI
 if CoreGui:FindFirstChild("FREDZEE") then CoreGui.FREDZEE:Destroy() end
 
--- ScreenGui
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "FREDZEE"
 ScreenGui.Parent = CoreGui
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- ═══════════════════════════════════════
--- 🟠 MINIMIZED FLOATING BUTTON
--- ═══════════════════════════════════════
+-- MINIMIZE BUTTON
 local FloatBtn = Instance.new("TextButton")
 FloatBtn.Name = "FloatBtn"
 FloatBtn.Parent = ScreenGui
@@ -37,9 +29,7 @@ FloatBtn.Active = true
 FloatBtn.Draggable = true
 Instance.new("UICorner", FloatBtn).CornerRadius = UDim.new(1, 0)
 
--- ═══════════════════════════════════════
--- 📦 MAIN GUI — SMALL & COMPACT
--- ═══════════════════════════════════════
+-- MAIN WINDOW
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
@@ -50,7 +40,7 @@ MainFrame.Active = true
 MainFrame.Draggable = true
 Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 20)
 
--- 🔴 TOP BAR
+-- TOP BAR
 local TopBar = Instance.new("Frame")
 TopBar.Parent = MainFrame
 TopBar.BackgroundColor3 = Color3.fromRGB(220, 30, 30)
@@ -67,7 +57,7 @@ Title.Text = "FREDZEE"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 24
 
--- ➖ MINIMIZE BUTTON — WORKS!
+-- MINIMIZE BUTTON
 local MinBtn = Instance.new("TextButton")
 MinBtn.Parent = TopBar
 MinBtn.BackgroundTransparency = 1
@@ -78,7 +68,7 @@ MinBtn.Text = "−"
 MinBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 MinBtn.TextSize = 24
 
--- 📄 CONTENT BOX
+-- CONTENT BOX
 local Content = Instance.new("Frame")
 Content.Parent = MainFrame
 Content.BackgroundTransparency = 1
@@ -87,13 +77,10 @@ Content.Size = UDim2.new(1, -30, 1, -75)
 
 local Layout = Instance.new("UIListLayout")
 Layout.Parent = Content
-Layout.Padding = UDim.new(0, 0)
 Layout.Spacing = UDim.new(0, 10)
 Layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
--- ═══════════════════════════════════════
--- 🔘 BUTTON CREATOR
--- ═══════════════════════════════════════
+-- BUTTON CREATOR
 local function AddButton(text)
     local btn = Instance.new("TextButton")
     btn.Parent = Content
@@ -109,7 +96,7 @@ local function AddButton(text)
     return btn
 end
 
--- 📋 ALL 6 FEATURE BUTTONS — VISIBLE!
+-- ALL 6 BUTTONS
 local btnCherub = AddButton("🥚 Auto Get Cherub Egg")
 local btnBlackhole = AddButton("🕳️ Auto Get Blackhole Egg")
 local btnAntiAFK = AddButton("🛡️ Anti AFK")
@@ -117,9 +104,7 @@ local btnInfJump = AddButton("🦘 Infinite Jump")
 local btnSpeed = AddButton("⚡ Speed Changer")
 local btnTP = AddButton("📍 Auto Teleport to Pen")
 
--- ═══════════════════════════════════════
--- 🔄 MINIMIZE / RESTORE — FIXED!
--- ═══════════════════════════════════════
+-- MINIMIZE FUNCTION
 local Minimized = false
 local function ToggleMin()
     Minimized = not Minimized
@@ -129,98 +114,66 @@ end
 MinBtn.MouseButton1Click:Connect(ToggleMin)
 FloatBtn.MouseButton1Click:Connect(ToggleMin)
 
--- ═══════════════════════════════════════
--- 🧠 FEATURE LOGIC — ALL WORKING!
--- ═══════════════════════════════════════
-local States = {
-    Cherub = false,
-    Blackhole = false,
-    AntiAFK = false,
-    InfJump = false,
-    Speed = 32
-}
+-- FEATURE STATES
+local States = {Cherub=false, Blackhole=false, AntiAFK=false, InfJump=false, Speed=32}
 
-local function ToggleFeature(btn, key)
+local function Toggle(btn, key)
     btn.MouseButton1Click:Connect(function()
         States[key] = not States[key]
-        btn.Text = States[key] and btn.Text .. " ✅" or string.gsub(btn.Text, " ✅", "")
-        btn.BackgroundColor3 = States[key] and Color3.fromRGB(220, 30, 30) or Color3.fromRGB(255, 255, 255)
-        btn.TextColor3 = States[key] and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(220, 30, 30)
+        btn.Text = States[key] and string.gsub(btn.Text, " ✅", "").." ✅" or string.gsub(btn.Text, " ✅", "")
+        btn.BackgroundColor3 = States[key] and Color3.fromRGB(220,30,30) or Color3.fromRGB(255,255,255)
+        btn.TextColor3 = States[key] and Color3.fromRGB(255,255,255) or Color3.fromRGB(220,30,30)
     end)
 end
 
-ToggleFeature(btnCherub, "Cherub")
-ToggleFeature(btnBlackhole, "Blackhole")
-ToggleFeature(btnAntiAFK, "AntiAFK")
-ToggleFeature(btnInfJump, "InfJump")
+Toggle(btnCherub, "Cherub")
+Toggle(btnBlackhole, "Blackhole")
+Toggle(btnAntiAFK, "AntiAFK")
+Toggle(btnInfJump, "InfJump")
 
--- ⚡ Speed Changer
 btnSpeed.MouseButton1Click:Connect(function()
     States.Speed = States.Speed + 10
-    btnSpeed.Text = "⚡ Speed: " .. States.Speed
-    local Char = LocalPlayer.Character
-    if Char and Char:FindFirstChild("Humanoid") then
-        Char.Humanoid.WalkSpeed = States.Speed
-    end
+    btnSpeed.Text = "⚡ Speed: "..States.Speed
+    local c = LocalPlayer.Character
+    if c and c:FindFirstChild("Humanoid") then c.Humanoid.WalkSpeed = States.Speed end
 end)
 
--- 📍 Teleport to Pen
 btnTP.MouseButton1Click:Connect(function()
-    local Char = LocalPlayer.Character
-    if Char and Char:FindFirstChild("HumanoidRootPart") then
-        Char.HumanoidRootPart.CFrame = CFrame.new(0, 5, 0)
-    end
+    local c = LocalPlayer.Character
+    if c and c:FindFirstChild("HumanoidRootPart") then c.HumanoidRootPart.CFrame = CFrame.new(0,5,0) end
 end)
 
--- 🔄 MAIN LOOP
+-- MAIN LOOP
 RunService.Heartbeat:Connect(function()
-    local Char = LocalPlayer.Character
-    if not Char then return end
-    local Root = Char:FindFirstChild("HumanoidRootPart")
-    local Hum = Char:FindFirstChild("Humanoid")
-    if not Root then return end
-
-    -- 🥚 Auto Cherub Egg
-    if States.Cherub then
-        for _, v in pairs(workspace:GetDescendants()) do
-            local n = string.lower(v.Name)
-            if string.find(n, "cherub") or string.find(n, "angel") then
-                local Target = v:IsA("BasePart") and v or v:FindFirstChild("HumanoidRootPart") or v.PrimaryPart
-                if Target then pcall(function() Target.CFrame = Root.CFrame end) end
-            end
+    local c = LocalPlayer.Character
+    if not c then return end
+    local r = c:FindFirstChild("HumanoidRootPart")
+    local h = c:FindFirstChild("Humanoid")
+    if not r then return end
+    
+    if States.Cherub then for _,v in pairs(workspace:GetDescendants()) do
+        if string.find(string.lower(v.Name), "cherub") or string.find(string.lower(v.Name), "angel") then
+            local t = v:IsA("BasePart") and v or v:FindFirstChild("HumanoidRootPart") or v.PrimaryPart
+            if t then pcall(function() t.CFrame = r.CFrame end) end
         end
-    end
-
-    -- 🕳️ Auto Blackhole Egg
-    if States.Blackhole then
-        for _, v in pairs(workspace:GetDescendants()) do
-            local n = string.lower(v.Name)
-            if string.find(n, "blackhole") or string.find(n, "black_hole") then
-                local Target = v:IsA("BasePart") and v or v:FindFirstChild("HumanoidRootPart") or v.PrimaryPart
-                if Target then pcall(function() Target.CFrame = Root.CFrame end) end
-            end
+    end end
+    
+    if States.Blackhole then for _,v in pairs(workspace:GetDescendants()) do
+        if string.find(string.lower(v.Name), "blackhole") then
+            local t = v:IsA("BasePart") and v or v:FindFirstChild("HumanoidRootPart") or v.PrimaryPart
+            if t then pcall(function() t.CFrame = r.CFrame end) end
         end
-    end
-
-    -- 🛡️ Anti AFK
-    if States.AntiAFK and Hum then
-        pcall(function()
-            Hum:Move(Vector3.new(0.5, 0, 0))
-            task.wait(0.1)
-            Hum:Move(Vector3.new(-0.5, 0, 0))
-        end)
-    end
+    end end
+    
+    if States.AntiAFK and h then pcall(function() h:Move(Vector3.new(0.5,0,0)) task.wait(0.1) h:Move(Vector3.new(-0.5,0,0)) end) end
 end)
 
--- 🦘 Infinite Jump
-UserInputService.InputBegan:Connect(function(input, gp)
+UserInputService.InputBegan:Connect(function(i,gp)
     if gp then return end
-    if States.InfJump and input.KeyCode == Enum.KeyCode.Space then
-        local Char = LocalPlayer.Character
-        if Char and Char:FindFirstChild("Humanoid") then
-            Char.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-        end
+    if States.InfJump and i.KeyCode == Enum.KeyCode.Space then
+        local c = LocalPlayer.Character
+        if c and c:FindFirstChild("Humanoid") then c.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping) end
     end
 end)
 
-print("✅ FREDZEE FULLY LOADED! All Features Working! 🚀")
+print("✅ FREDZEE LOADED!")
