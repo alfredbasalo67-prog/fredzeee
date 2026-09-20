@@ -1,6 +1,6 @@
 -- ╔══════════════════════════════════════╗
--- ║    ✨ FREDZEEE — FULLY FIXED ✨       ║
--- ║ Ride A Pet — Auto Eggs + Jump FIXED    ║
+-- ║           ✨ FREDZEEE ✨              ║
+-- ║     Ride A Pet — All-in-One Hub       ║
 -- ╚══════════════════════════════════════╝
 
 -- Services
@@ -26,8 +26,8 @@ MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
 MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
 MainFrame.BorderColor3 = Color3.fromRGB(255, 200, 40)
-MainFrame.Position = UDim2.new(0.05, 0, 0.5, -210)
-MainFrame.Size = UDim2.new(0, 280, 0, 440)
+MainFrame.Position = UDim2.new(0.05, 0, 0.5, -200)
+MainFrame.Size = UDim2.new(0, 280, 0, 420)
 MainFrame.Active = true
 MainFrame.Draggable = true
 
@@ -79,7 +79,7 @@ local function CreateButton(name, yPos, text)
     btn.Parent = MainFrame
     btn.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
     btn.Position = UDim2.new(0, 15, 0, yPos)
-    btn.Size = UDim2.new(1, -30, 0, 38)
+    btn.Size = UDim2.new(1, -30, 0, 36)
     btn.Font = Enum.Font.Gotham
     btn.Text = text
     btn.TextColor3 = Color3.fromRGB(240, 240, 240)
@@ -90,26 +90,26 @@ local function CreateButton(name, yPos, text)
     return btn
 end
 
--- 🥚 Auto Blackhole Egg — FIXED
+-- 🥚 Auto Blackhole Egg
 local AutoBH = CreateButton("AutoBH", 55, "🥚 Auto Blackhole Egg: OFF")
 local AutoBH_Enabled = false
 AutoBH.MouseButton1Click:Connect(function()
     AutoBH_Enabled = not AutoBH_Enabled
-    AutoBH.Text = AutoBH_Enabled and "🥚 Auto Blackhole Egg: ON ✅" or "🥚 Auto Blackhole Egg: OFF"
+    AutoBH.Text = AutoBH_Enabled and "🥚 Auto Blackhole Egg: ON" or "🥚 Auto Blackhole Egg: OFF"
     AutoBH.BackgroundColor3 = AutoBH_Enabled and Color3.fromRGB(40, 160, 80) or Color3.fromRGB(40, 40, 55)
 end)
 
--- ✨ Auto Cherub Egg — FIXED
-local AutoCherub = CreateButton("AutoCherub", 103, "✨ Auto Cherub Egg: OFF")
+-- ✨ Auto Cherub Egg
+local AutoCherub = CreateButton("AutoCherub", 100, "✨ Auto Cherub Egg: OFF")
 local AutoCherub_Enabled = false
 AutoCherub.MouseButton1Click:Connect(function()
     AutoCherub_Enabled = not AutoCherub_Enabled
-    AutoCherub.Text = AutoCherub_Enabled and "✨ Auto Cherub Egg: ON ✅" or "✨ Auto Cherub Egg: OFF"
+    AutoCherub.Text = AutoCherub_Enabled and "✨ Auto Cherub Egg: ON" or "✨ Auto Cherub Egg: OFF"
     AutoCherub.BackgroundColor3 = AutoCherub_Enabled and Color3.fromRGB(40, 160, 80) or Color3.fromRGB(40, 40, 55)
 end)
 
 -- 📍 Teleport to Pen
-local TPPen = CreateButton("TPPen", 151, "📍 Teleport to Pen")
+local TPPen = CreateButton("TPPen", 145, "📍 Teleport to Pen")
 TPPen.MouseButton1Click:Connect(function()
     local Char = LocalPlayer.Character
     if Char and Char:FindFirstChild("HumanoidRootPart") then
@@ -117,21 +117,21 @@ TPPen.MouseButton1Click:Connect(function()
     end
 end)
 
--- 🦘 Infinite Jump — FULLY FIXED
-local InfJump = CreateButton("InfJump", 199, "🦘 Infinite Jump: OFF")
+-- 🦘 Infinite Jump
+local InfJump = CreateButton("InfJump", 190, "🦘 Infinite Jump: OFF")
 local InfJump_Enabled = false
 InfJump.MouseButton1Click:Connect(function()
     InfJump_Enabled = not InfJump_Enabled
-    InfJump.Text = InfJump_Enabled and "🦘 Infinite Jump: ON ✅" or "🦘 Infinite Jump: OFF"
+    InfJump.Text = InfJump_Enabled and "🦘 Infinite Jump: ON" or "🦘 Infinite Jump: OFF"
     InfJump.BackgroundColor3 = InfJump_Enabled and Color3.fromRGB(40, 160, 80) or Color3.fromRGB(40, 40, 55)
 end)
 
 -- 👻 NoClip
-local NoClip = CreateButton("NoClip", 247, "👻 NoClip: OFF")
+local NoClip = CreateButton("NoClip", 235, "👻 NoClip: OFF")
 local NoClip_Enabled = false
 NoClip.MouseButton1Click:Connect(function()
     NoClip_Enabled = not NoClip_Enabled
-    NoClip.Text = NoClip_Enabled and "👻 NoClip: ON ✅" or "👻 NoClip: OFF"
+    NoClip.Text = NoClip_Enabled and "👻 NoClip: ON" or "👻 NoClip: OFF"
     NoClip.BackgroundColor3 = NoClip_Enabled and Color3.fromRGB(40, 160, 80) or Color3.fromRGB(40, 40, 55)
 end)
 
@@ -139,7 +139,7 @@ end)
 local SpeedLabel = Instance.new("TextLabel")
 SpeedLabel.Parent = MainFrame
 SpeedLabel.BackgroundTransparency = 1
-SpeedLabel.Position = UDim2.new(0, 15, 0, 300)
+SpeedLabel.Position = UDim2.new(0, 15, 0, 280)
 SpeedLabel.Size = UDim2.new(0, 200, 0, 25)
 SpeedLabel.Font = Enum.Font.Gotham
 SpeedLabel.Text = "⚡ WalkSpeed:"
@@ -149,7 +149,7 @@ SpeedLabel.TextSize = 14
 local SpeedBox = Instance.new("TextBox")
 SpeedBox.Parent = MainFrame
 SpeedBox.BackgroundColor3 = Color3.fromRGB(70, 70, 90)
-SpeedBox.Position = UDim2.new(0, 15, 0, 330)
+SpeedBox.Position = UDim2.new(0, 15, 0, 310)
 SpeedBox.Size = UDim2.new(0, 130, 0, 32)
 SpeedBox.Font = Enum.Font.Gotham
 SpeedBox.Text = "32"
@@ -159,7 +159,7 @@ SpeedBox.TextSize = 14
 local SpeedBtn = Instance.new("TextButton")
 SpeedBtn.Parent = MainFrame
 SpeedBtn.BackgroundColor3 = Color3.fromRGB(40, 120, 200)
-SpeedBtn.Position = UDim2.new(0, 160, 0, 330)
+SpeedBtn.Position = UDim2.new(0, 160, 0, 310)
 SpeedBtn.Size = UDim2.new(0, 75, 0, 32)
 SpeedBtn.Font = Enum.Font.Gotham
 SpeedBtn.Text = "Set"
@@ -173,47 +173,22 @@ SpeedBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- ========== MAIN LOOP — ALL FIXED ==========
+-- ========== MAIN LOOP ==========
 RunService.Heartbeat:Connect(function()
     local Char = LocalPlayer.Character
     if not Char then return end
     local Root = Char:FindFirstChild("HumanoidRootPart")
-    local Humanoid = Char:FindFirstChild("Humanoid")
     if not Root then return end
 
-    -- 🥚 Auto Collect Eggs — FIXED: uses GetDescendants()
+    -- Auto Collect Eggs
     if AutoBH_Enabled or AutoCherub_Enabled then
-        for _, v in pairs(workspace:GetDescendants()) do
-            local name = string.lower(v.Name)
-            local TargetPart = nil
-
-            -- Get main part if it's a Model
-            if v:IsA("Model") then
-                TargetPart = v:FindFirstChild("HumanoidRootPart") or v.PrimaryPart
-            elseif v:IsA("BasePart") then
-                TargetPart = v
-            end
-
-            if not TargetPart then continue end
-
-            -- BLACKHOLE EGG — ALL name variations
-            if AutoBH_Enabled then
-                if string.find(name, "black") and string.find(name, "hole")
-                or string.find(name, "blackhole")
-                or string.find(name, "black_hole")
-                or string.find(name, "bh") and string.find(name, "egg")
-                or string.find(name, "darkhole") then
-                    pcall(function() TargetPart.CFrame = Root.CFrame end)
+        for _, v in pairs(workspace:GetChildren()) do
+            if v:IsA("BasePart") then
+                if AutoBH_Enabled and (string.find(string.lower(v.Name), "blackhole") or string.find(string.lower(v.Name), "black_hole")) then
+                    pcall(function() v.CFrame = Root.CFrame end)
                 end
-            end
-
-            -- CHERUB EGG — ALL name variations
-            if AutoCherub_Enabled then
-                if string.find(name, "cherub")
-                or string.find(name, "angel")
-                or string.find(name, "cherubegg")
-                or string.find(name, "winged") then
-                    pcall(function() TargetPart.CFrame = Root.CFrame end)
+                if AutoCherub_Enabled and string.find(string.lower(v.Name), "cherub") then
+                    pcall(function() v.CFrame = Root.CFrame end)
                 end
             end
         end
@@ -225,17 +200,9 @@ RunService.Heartbeat:Connect(function()
             if v:IsA("BasePart") then v.CanCollide = false end
         end
     end
-
-    -- INFINITE JUMP — FIXED METHOD
-    if InfJump_Enabled and Humanoid then
-        if Humanoid.FloorMaterial ~= Enum.Material.Air then
-            -- Player is on ground — ready to jump
-            InfJump.CanJump = true
-        end
-    end
 end)
 
--- Infinite Jump — KEY DETECTION
+-- Infinite Jump
 UserInputService.InputBegan:Connect(function(input, gp)
     if gp then return end
     if InfJump_Enabled and input.KeyCode == Enum.KeyCode.Space then
@@ -246,4 +213,4 @@ UserInputService.InputBegan:Connect(function(input, gp)
     end
 end)
 
-print("✅ FREDZEEE — ALL FIXED!")
+print("✅ FREDZEEE Loaded!")
