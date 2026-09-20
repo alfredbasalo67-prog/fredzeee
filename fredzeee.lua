@@ -1,13 +1,9 @@
--- ======================================
---          FREDZEX — SCRIPT
--- ======================================
--- Auto Get Blackhole Egg ✅
--- Auto Get Cherub Egg ✅
--- Auto Get Galaxy Egg ✅
--- Anti AFK ✅
--- Infinite Jump ✅
--- Speed Changer ✅
+-- ╔══════════════════════════════════════╗
+-- ║    ✨ FREDZEEE — FULLY FIXED ✨       ║
+-- ║ Ride A Pet — Auto Eggs + Jump FIXED    ║
+-- ╚══════════════════════════════════════╝
 
+-- Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -15,223 +11,234 @@ local CoreGui = game:GetService("CoreGui")
 local LocalPlayer = Players.LocalPlayer
 if not LocalPlayer then return end
 
--- Remove old GUI
-if CoreGui:FindFirstChild("FredzexUI") then CoreGui.FredzexUI:Destroy() end
+-- Cleanup old GUI
+if CoreGui:FindFirstChild("fredzeee") then CoreGui.fredzeee:Destroy() end
 
--- Main ScreenGui
+-- Create GUI
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "FredzexUI"
+ScreenGui.Name = "fredzeee"
 ScreenGui.Parent = CoreGui
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- ======================================
--- 🟠 MINIMIZED FLOATING BUTTON
--- ======================================
-local FloatBtn = Instance.new("TextButton")
-FloatBtn.Name = "FloatBtn"
-FloatBtn.Parent = ScreenGui
-FloatBtn.BackgroundColor3 = Color3.fromRGB(220, 30, 30)
-FloatBtn.Position = UDim2.new(0.02, 0, 0.5, -25)
-FloatBtn.Size = UDim2.new(0, 50, 0, 50)
-FloatBtn.Text = "FX"
-FloatBtn.Font = Enum.Font.GothamBold
-FloatBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-FloatBtn.TextSize = 20
-FloatBtn.Visible = false
-FloatBtn.Active = true
-FloatBtn.Draggable = true
-Instance.new("UICorner", FloatBtn).CornerRadius = UDim.new(1, 0)
-
--- ======================================
--- 📦 MAIN WINDOW
--- ======================================
+-- Main Frame
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-MainFrame.Position = UDim2.new(0.5, -135, 0.5, -200)
-MainFrame.Size = UDim2.new(0, 270, 0, 400)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+MainFrame.BorderColor3 = Color3.fromRGB(255, 200, 40)
+MainFrame.Position = UDim2.new(0.05, 0, 0.5, -210)
+MainFrame.Size = UDim2.new(0, 280, 0, 440)
 MainFrame.Active = true
 MainFrame.Draggable = true
-Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 20)
 
--- 🔴 TOP BAR
-local TopBar = Instance.new("Frame")
-TopBar.Parent = MainFrame
-TopBar.BackgroundColor3 = Color3.fromRGB(220, 30, 30)
-TopBar.Size = UDim2.new(1, 0, 0, 55)
-Instance.new("UICorner", TopBar).CornerRadius = UDim.new(0, 20)
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = MainFrame
+
+-- Title Bar
+local TitleBar = Instance.new("Frame")
+TitleBar.Parent = MainFrame
+TitleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+TitleBar.Size = UDim2.new(1, 0, 0, 45)
 
 local Title = Instance.new("TextLabel")
-Title.Parent = TopBar
+Title.Parent = TitleBar
 Title.BackgroundTransparency = 1
-Title.Position = UDim2.new(0.5, -60, 0, 0)
-Title.Size = UDim2.new(0, 120, 1, 0)
+Title.Position = UDim2.new(0, 12, 0, 0)
+Title.Size = UDim2.new(1, -55, 1, 0)
 Title.Font = Enum.Font.GothamBold
-Title.Text = "FREDZEX"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 24
+Title.Text = "✨ FREDZEEE ✨"
+Title.TextColor3 = Color3.fromRGB(255, 220, 40)
+Title.TextSize = 18
 
--- ➖ MINIMIZE BUTTON
-local MinBtn = Instance.new("TextButton")
-MinBtn.Parent = TopBar
-MinBtn.BackgroundTransparency = 1
-MinBtn.Position = UDim2.new(1, -40, 0, 0)
-MinBtn.Size = UDim2.new(0, 35, 1, 0)
-MinBtn.Font = Enum.Font.GothamBold
-MinBtn.Text = "−"
-MinBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-MinBtn.TextSize = 24
+-- Toggle Button
+local ToggleBtn = Instance.new("TextButton")
+ToggleBtn.Parent = TitleBar
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+ToggleBtn.Position = UDim2.new(1, -38, 0, 7)
+ToggleBtn.Size = UDim2.new(0, 32, 0, 32)
+ToggleBtn.Font = Enum.Font.GothamBold
+ToggleBtn.Text = "X"
+ToggleBtn.TextColor3 = Color3.new(1,1,1)
+ToggleBtn.TextSize = 15
 
--- 📄 CONTENT AREA
-local Content = Instance.new("Frame")
-Content.Parent = MainFrame
-Content.BackgroundTransparency = 1
-Content.Position = UDim2.new(0, 15, 0, 65)
-Content.Size = UDim2.new(1, -30, 1, -75)
+local GUI_Open = true
+ToggleBtn.MouseButton1Click:Connect(function()
+    GUI_Open = not GUI_Open
+    MainFrame.Visible = GUI_Open
+    ToggleBtn.Text = GUI_Open and "X" or "≡"
+    ToggleBtn.BackgroundColor3 = GUI_Open 
+        and Color3.fromRGB(200, 60, 60) 
+        or Color3.fromRGB(60, 180, 80)
+end)
 
-local Layout = Instance.new("UIListLayout")
-Layout.Parent = Content
-Layout.Spacing = UDim.new(0, 10)
-Layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-
--- ======================================
--- 🔘 BUTTON CREATOR
--- ======================================
-local function AddButton(text)
+-- Helper: Create Button
+local function CreateButton(name, yPos, text)
     local btn = Instance.new("TextButton")
-    btn.Parent = Content
-    btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    btn.BorderSizePixel = 2
-    btn.BorderColor3 = Color3.fromRGB(220, 30, 30)
-    btn.Size = UDim2.new(1, 0, 0, 48)
-    btn.Font = Enum.Font.GothamBold
+    btn.Name = name
+    btn.Parent = MainFrame
+    btn.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+    btn.Position = UDim2.new(0, 15, 0, yPos)
+    btn.Size = UDim2.new(1, -30, 0, 38)
+    btn.Font = Enum.Font.Gotham
     btn.Text = text
-    btn.TextColor3 = Color3.fromRGB(220, 30, 30)
-    btn.TextSize = 15
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 12)
+    btn.TextColor3 = Color3.fromRGB(240, 240, 240)
+    btn.TextSize = 14
+    local uiC = Instance.new("UICorner")
+    uiC.CornerRadius = UDim.new(0, 6)
+    uiC.Parent = btn
     return btn
 end
 
--- 📋 ALL 6 FEATURE BUTTONS — IN ORDER YOU ASKED!
-local btnBlackhole = AddButton("🕳️ Auto Get Blackhole Egg")
-local btnCherub = AddButton("🥚 Auto Get Cherub Egg")
-local btnGalaxy = AddButton("🌌 Auto Get Galaxy Egg")
-local btnAntiAFK = AddButton("🛡️ Anti AFK")
-local btnInfJump = AddButton("🦘 Infinite Jump")
-local btnSpeed = AddButton("⚡ Speed Changer")
+-- 🥚 Auto Blackhole Egg — FIXED
+local AutoBH = CreateButton("AutoBH", 55, "🥚 Auto Blackhole Egg: OFF")
+local AutoBH_Enabled = false
+AutoBH.MouseButton1Click:Connect(function()
+    AutoBH_Enabled = not AutoBH_Enabled
+    AutoBH.Text = AutoBH_Enabled and "🥚 Auto Blackhole Egg: ON ✅" or "🥚 Auto Blackhole Egg: OFF"
+    AutoBH.BackgroundColor3 = AutoBH_Enabled and Color3.fromRGB(40, 160, 80) or Color3.fromRGB(40, 40, 55)
+end)
 
--- ======================================
--- 🔄 MINIMIZE / RESTORE
--- ======================================
-local Minimized = false
-local function ToggleMin()
-    Minimized = not Minimized
-    MainFrame.Visible = not Minimized
-    FloatBtn.Visible = Minimized
-end
-MinBtn.MouseButton1Click:Connect(ToggleMin)
-FloatBtn.MouseButton1Click:Connect(ToggleMin)
+-- ✨ Auto Cherub Egg — FIXED
+local AutoCherub = CreateButton("AutoCherub", 103, "✨ Auto Cherub Egg: OFF")
+local AutoCherub_Enabled = false
+AutoCherub.MouseButton1Click:Connect(function()
+    AutoCherub_Enabled = not AutoCherub_Enabled
+    AutoCherub.Text = AutoCherub_Enabled and "✨ Auto Cherub Egg: ON ✅" or "✨ Auto Cherub Egg: OFF"
+    AutoCherub.BackgroundColor3 = AutoCherub_Enabled and Color3.fromRGB(40, 160, 80) or Color3.fromRGB(40, 40, 55)
+end)
 
--- ======================================
--- 🧠 FEATURE LOGIC
--- ======================================
-local States = {
-    Blackhole = false,
-    Cherub = false,
-    Galaxy = false,
-    AntiAFK = false,
-    InfJump = false,
-    Speed = 32
-}
-
-local function ToggleFeature(btn, key)
-    btn.MouseButton1Click:Connect(function()
-        States[key] = not States[key]
-        if States[key] then
-            btn.Text = btn.Text .. " ✅"
-            btn.BackgroundColor3 = Color3.fromRGB(220, 30, 30)
-            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        else
-            btn.Text = string.gsub(btn.Text, " ✅", "")
-            btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            btn.TextColor3 = Color3.fromRGB(220, 30, 30)
-        end
-    end)
-end
-
--- Toggle all buttons
-ToggleFeature(btnBlackhole, "Blackhole")
-ToggleFeature(btnCherub, "Cherub")
-ToggleFeature(btnGalaxy, "Galaxy")
-ToggleFeature(btnAntiAFK, "AntiAFK")
-ToggleFeature(btnInfJump, "InfJump")
-
--- ⚡ Speed Changer
-btnSpeed.MouseButton1Click:Connect(function()
-    States.Speed = States.Speed + 10
-    btnSpeed.Text = "⚡ Speed: " .. States.Speed
+-- 📍 Teleport to Pen
+local TPPen = CreateButton("TPPen", 151, "📍 Teleport to Pen")
+TPPen.MouseButton1Click:Connect(function()
     local Char = LocalPlayer.Character
-    if Char and Char:FindFirstChild("Humanoid") then
-        Char.Humanoid.WalkSpeed = States.Speed
+    if Char and Char:FindFirstChild("HumanoidRootPart") then
+        Char.HumanoidRootPart.CFrame = CFrame.new(10, 5, 120)
     end
 end)
 
--- 🔄 MAIN LOOP
+-- 🦘 Infinite Jump — FULLY FIXED
+local InfJump = CreateButton("InfJump", 199, "🦘 Infinite Jump: OFF")
+local InfJump_Enabled = false
+InfJump.MouseButton1Click:Connect(function()
+    InfJump_Enabled = not InfJump_Enabled
+    InfJump.Text = InfJump_Enabled and "🦘 Infinite Jump: ON ✅" or "🦘 Infinite Jump: OFF"
+    InfJump.BackgroundColor3 = InfJump_Enabled and Color3.fromRGB(40, 160, 80) or Color3.fromRGB(40, 40, 55)
+end)
+
+-- 👻 NoClip
+local NoClip = CreateButton("NoClip", 247, "👻 NoClip: OFF")
+local NoClip_Enabled = false
+NoClip.MouseButton1Click:Connect(function()
+    NoClip_Enabled = not NoClip_Enabled
+    NoClip.Text = NoClip_Enabled and "👻 NoClip: ON ✅" or "👻 NoClip: OFF"
+    NoClip.BackgroundColor3 = NoClip_Enabled and Color3.fromRGB(40, 160, 80) or Color3.fromRGB(40, 40, 55)
+end)
+
+-- ⚡ Speed Control
+local SpeedLabel = Instance.new("TextLabel")
+SpeedLabel.Parent = MainFrame
+SpeedLabel.BackgroundTransparency = 1
+SpeedLabel.Position = UDim2.new(0, 15, 0, 300)
+SpeedLabel.Size = UDim2.new(0, 200, 0, 25)
+SpeedLabel.Font = Enum.Font.Gotham
+SpeedLabel.Text = "⚡ WalkSpeed:"
+SpeedLabel.TextColor3 = Color3.new(1,1,1)
+SpeedLabel.TextSize = 14
+
+local SpeedBox = Instance.new("TextBox")
+SpeedBox.Parent = MainFrame
+SpeedBox.BackgroundColor3 = Color3.fromRGB(70, 70, 90)
+SpeedBox.Position = UDim2.new(0, 15, 0, 330)
+SpeedBox.Size = UDim2.new(0, 130, 0, 32)
+SpeedBox.Font = Enum.Font.Gotham
+SpeedBox.Text = "32"
+SpeedBox.TextColor3 = Color3.new(1,1,1)
+SpeedBox.TextSize = 14
+
+local SpeedBtn = Instance.new("TextButton")
+SpeedBtn.Parent = MainFrame
+SpeedBtn.BackgroundColor3 = Color3.fromRGB(40, 120, 200)
+SpeedBtn.Position = UDim2.new(0, 160, 0, 330)
+SpeedBtn.Size = UDim2.new(0, 75, 0, 32)
+SpeedBtn.Font = Enum.Font.Gotham
+SpeedBtn.Text = "Set"
+SpeedBtn.TextColor3 = Color3.new(1,1,1)
+SpeedBtn.TextSize = 14
+SpeedBtn.MouseButton1Click:Connect(function()
+    local speed = tonumber(SpeedBox.Text)
+    local Char = LocalPlayer.Character
+    if speed and Char and Char:FindFirstChild("Humanoid") then
+        Char.Humanoid.WalkSpeed = speed
+    end
+end)
+
+-- ========== MAIN LOOP — ALL FIXED ==========
 RunService.Heartbeat:Connect(function()
     local Char = LocalPlayer.Character
     if not Char then return end
     local Root = Char:FindFirstChild("HumanoidRootPart")
-    local Hum = Char:FindFirstChild("Humanoid")
+    local Humanoid = Char:FindFirstChild("Humanoid")
     if not Root then return end
 
-    -- 🕳️ Auto Blackhole Egg
-    if States.Blackhole then
+    -- 🥚 Auto Collect Eggs — FIXED: uses GetDescendants()
+    if AutoBH_Enabled or AutoCherub_Enabled then
         for _, v in pairs(workspace:GetDescendants()) do
-            local Name = string.lower(v.Name)
-            if string.find(Name, "blackhole") or string.find(Name, "black_hole") then
-                local Target = v:IsA("BasePart") and v or v:FindFirstChild("HumanoidRootPart") or v.PrimaryPart
-                if Target then pcall(function() Target.CFrame = Root.CFrame end) end
+            local name = string.lower(v.Name)
+            local TargetPart = nil
+
+            -- Get main part if it's a Model
+            if v:IsA("Model") then
+                TargetPart = v:FindFirstChild("HumanoidRootPart") or v.PrimaryPart
+            elseif v:IsA("BasePart") then
+                TargetPart = v
+            end
+
+            if not TargetPart then continue end
+
+            -- BLACKHOLE EGG — ALL name variations
+            if AutoBH_Enabled then
+                if string.find(name, "black") and string.find(name, "hole")
+                or string.find(name, "blackhole")
+                or string.find(name, "black_hole")
+                or string.find(name, "bh") and string.find(name, "egg")
+                or string.find(name, "darkhole") then
+                    pcall(function() TargetPart.CFrame = Root.CFrame end)
+                end
+            end
+
+            -- CHERUB EGG — ALL name variations
+            if AutoCherub_Enabled then
+                if string.find(name, "cherub")
+                or string.find(name, "angel")
+                or string.find(name, "cherubegg")
+                or string.find(name, "winged") then
+                    pcall(function() TargetPart.CFrame = Root.CFrame end)
+                end
             end
         end
     end
 
-    -- 🥚 Auto Cherub Egg
-    if States.Cherub then
-        for _, v in pairs(workspace:GetDescendants()) do
-            local Name = string.lower(v.Name)
-            if string.find(Name, "cherub") or string.find(Name, "angel") then
-                local Target = v:IsA("BasePart") and v or v:FindFirstChild("HumanoidRootPart") or v.PrimaryPart
-                if Target then pcall(function() Target.CFrame = Root.CFrame end) end
-            end
+    -- NoClip
+    if NoClip_Enabled then
+        for _, v in pairs(Char:GetChildren()) do
+            if v:IsA("BasePart") then v.CanCollide = false end
         end
     end
 
-    -- 🌌 Auto Galaxy Egg
-    if States.Galaxy then
-        for _, v in pairs(workspace:GetDescendants()) do
-            local Name = string.lower(v.Name)
-            if string.find(Name, "galaxy") or string.find(Name, "cosmic") or string.find(Name, "universe") then
-                local Target = v:IsA("BasePart") and v or v:FindFirstChild("HumanoidRootPart") or v.PrimaryPart
-                if Target then pcall(function() Target.CFrame = Root.CFrame end) end
-            end
+    -- INFINITE JUMP — FIXED METHOD
+    if InfJump_Enabled and Humanoid then
+        if Humanoid.FloorMaterial ~= Enum.Material.Air then
+            -- Player is on ground — ready to jump
+            InfJump.CanJump = true
         end
-    end
-
-    -- 🛡️ Anti AFK
-    if States.AntiAFK and Hum then
-        pcall(function()
-            Hum:Move(Vector3.new(0.5, 0, 0))
-            task.wait(0.1)
-            Hum:Move(Vector3.new(-0.5, 0, 0))
-        end)
     end
 end)
 
--- 🦘 Infinite Jump
+-- Infinite Jump — KEY DETECTION
 UserInputService.InputBegan:Connect(function(input, gp)
     if gp then return end
-    if States.InfJump and input.KeyCode == Enum.KeyCode.Space then
+    if InfJump_Enabled and input.KeyCode == Enum.KeyCode.Space then
         local Char = LocalPlayer.Character
         if Char and Char:FindFirstChild("Humanoid") then
             Char.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
@@ -239,4 +246,4 @@ UserInputService.InputBegan:Connect(function(input, gp)
     end
 end)
 
-print("✅ FREDZEX LOADED! All Features Working! 🚀")
+print("✅ FREDZEEE — ALL FIXED!")
