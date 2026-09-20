@@ -1,0 +1,256 @@
+--============================================================
+--  RIDE A PET - All-in-One Script (with toggleable UI)
+--  Place in: StarterPlayer > StarterPlayerScripts (LocalScript)
+--  Requires: A RemoteEvent named "RidePetEvent" in ReplicatedStorage
+--============================================================
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+
+local player = Players.LocalPlayer
+local rideEvent = ReplicatedStorage:WaitForChild("RidePetEvent")
+
+--============================================================
+-- CONFIG
+--============================================================
+local CONFIG = {
+	ToggleKey = Enum.KeyCode.E,     -- ride/dismount key
+	MenuKey   = Enum.KeyCode.R,     -- open/close menu key
+	SeatOffset = CFrame.new(0, 2.5, 0),
+	PetPrefix = "_Pet",
+}
+
+--============================================================
+-- STATE
+--============================================================
+local riding = false
+local currentPet = nil
+local rideWeld = nil
+local menuOpen = true
+
+--============================================================
+-- PET LOOKUP
+--============================================================
+local function getEquippedPet()
+	local pet = workspace:FindFirstChild(player.Name .. CONFIG.PetPrefix)
+	if pet then return pet end
+
+	for _, obj in ipairs(workspace:GetDescendants()) do
+		if obj:IsA("Model") and obj:GetAttribute("Owner") == player.Name then
+			return obj
+		end
+	end
+	return nil
+end
+
+--============================================================
+-- RIDING LOGIC
+--============================================================
+local function attachToPet(pet)
+	local character = player.Character
+	if not character or not pet then return end
+
+	local hrp = character:FindFirstChild("HumanoidRootPart")
+	local petPart = pet:FindFirstChild("HumanoidRootPart")
+		or pet:FindFirstChildWhichIsA("BasePart")
+	if not hrp or not petPart then return end
+
+	if rideWeld then rideWeld:Destroy() end
+
+	rideWeld = Instance.new("Weld")
+	rideWeld.Name = "PetRideWeld"
+	rideWeld.Part0 = petPart
+	rideWeld.Part1 = hrp
+	rideWeld.C0 = CONFIG.SeatOffset
+	rideWeld.Parent = hrp
+
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	if humanoid then humanoid.PlatformStand = true end
+
+	currentPet = pet
+end
+
+local function detachFromPet()
+	local character = player.Character
+	if character then
+		local humanoid = character:FindFirstChildOfClass("Humanoid")
+		if humanoid then humanoid.PlatformStand = false end
+	end
+	if rideWeld then
+		rideWeld:Destroy()
+		rideWeld = nil
+	end
+	currentPet = nil
+end
+
+--============================================================
+-- UI BUILD
+--============================================================
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "PetRideUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent = player:WaitForChild("PlayerGui")
+
+-- ---------- FLOATING OPEN/CLOSE BUTTON ----------
+local openButton = Instance.new("TextButton")
+openButton.Size = UDim2.new(0, 46, 0, 46)
+openButton.Position = UDim2.new(0, 16, 1, -62)
+openButton.BackgroundColor3 = Color3.fromRGB(30, 30, 42)
+openButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+openButton.Font = Enum.Font.GothamBold
+openButton.TextSize = 20
+openButton.Text = "🐾"
+openButton.BorderSizePixel = 0
+openButton.AutoButtonColor = true
+openButton.Parent = ScreenGui
+
+local openCorner = Instance.new("UICorner")
+openCorner.CornerRadius = UDim.new(0, 10)
+openCorner.Parent = openButton
+
+local openStroke = Instance.new("UIStroke")
+openStroke.Color = Color3.fromRGB(90, 90, 130)
+openStroke.Thickness = 1.5
+openStroke.Parent = openButton
+
+-- ---------- MAIN PANEL ----------
+local panel = Instance.new("Frame")
+panel.Size = UDim2.new(0, 200, 0, 130)
+panel.Position = UDim2.new(0, 70, 1, -150)
+panel.BackgroundColor3 = Color3.fromRGB(22, 22, 32)
+panel.BorderSizePixel = 0
+panel.Visible = true
+panel.Parent = ScreenGui
+
+local panelCorner = Instance.new("UICorner")
+panelCorner.CornerRadius = UDim.new(0, 12)
+panelCorner.Parent = panel
+
+local panelStroke = Instance.new("UIStroke")
+panelStroke.Color = Color3.fromRGB(80, 80, 120)
+panelStroke.Thickness = 1.5
+panelStroke.Parent = panel
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 32)
+title.BackgroundTransparency = 1
+title.Text = "🐾  Pet Ride"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 15
+title.Parent = panel
+
+-- Ride/Dismount button inside panel
+local rideButton = Instance.new("TextButton")
+rideButton.Size = UDim2.new(1, -24, 0, 42)
+rideButton.Position = UDim2.new(0, 12, 0, 42)
+rideButton.BackgroundColor3 = Color3.fromRGB(45, 90, 60)
+rideButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+rideButton.Font = Enum.Font.GothamMedium
+rideButton.TextSize = 15
+rideButton.Text = "🚀  Ride Pet"
+rideButton.BorderSizePixel = 0
+rideButton.AutoButtonColor = true
+rideButton.Parent = panel
+
+local rideCorner = Instance.new("UICorner")
+rideCorner.CornerRadius = UDim.new(0, 8)
+rideCorner.Parent = rideButton
+
+-- Close button inside panel
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(1, -24, 0, 26)
+closeButton.Position = UDim2.new(0, 12, 1, -34)
+closeButton.BackgroundColor3 = Color3.fromRGB(50, 30, 30)
+closeButton.TextColor3 = Color3.fromRGB(255, 200, 200)
+closeButton.Font = Enum.Font.GothamMedium
+closeButton.TextSize = 13
+closeButton.Text = "✖  Close Menu"
+closeButton.BorderSizePixel = 0
+closeButton.AutoButtonColor = true
+closeButton.Parent = panel
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 8)
+closeCorner.Parent = closeButton
+
+--============================================================
+-- UI TOGGLE (open/close menu)
+--============================================================
+local function setMenu(open)
+	menuOpen = open
+	panel.Visible = open
+
+	if open then
+		panel.Size = UDim2.new(0, 200, 0, 0)
+		TweenService:Create(
+			panel,
+			TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{ Size = UDim2.new(0, 200, 0, 130) }
+		):Play()
+	end
+end
+
+openButton.MouseButton1Click:Connect(function()
+	setMenu(not menuOpen)
+end)
+
+closeButton.MouseButton1Click:Connect(function()
+	setMenu(false)
+end)
+
+--============================================================
+-- RIDE TOGGLE
+--============================================================
+local function toggleRide()
+	local pet = currentPet or getEquippedPet()
+	if not pet then
+		warn("[RidePet] No equipped pet found.")
+		return
+	end
+
+	riding = not riding
+
+	if riding then
+		attachToPet(pet)
+		rideEvent:FireServer("ride", pet)
+	else
+		detachFromPet()
+		rideEvent:FireServer("stop", pet)
+	end
+
+	rideButton.Text = riding and "🛑  Dismount" or "🚀  Ride Pet"
+	rideButton.BackgroundColor3 = riding
+		and Color3.fromRGB(90, 45, 45)
+		or Color3.fromRGB(45, 90, 60)
+end
+
+rideButton.MouseButton1Click:Connect(toggleRide)
+
+--============================================================
+-- KEYBINDS
+--============================================================
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+	if gameProcessed then return end
+
+	if input.KeyCode == CONFIG.ToggleKey then
+		toggleRide()
+	elseif input.KeyCode == CONFIG.MenuKey then
+		setMenu(not menuOpen)
+	end
+end)
+
+--============================================================
+-- CLEANUP ON RESPAWN
+--============================================================
+player.CharacterAdded:Connect(function()
+	riding = false
+	rideWeld = nil
+	currentPet = nil
+	rideButton.Text = "🚀  Ride Pet"
+	rideButton.BackgroundColor3 = Color3.fromRGB(45, 90, 60)
+end)
