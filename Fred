@@ -1,0 +1,475 @@
+--// ALFREDEX RIDE CONTROLLER
+--// Original Roblox Studio prototype
+--// Place in: StarterPlayer > StarterPlayerScripts
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+
+--==================================================
+-- SETTINGS
+--==================================================
+
+local NORMAL_SPEED = 16
+local BOOST_SPEED = 35
+local NORMAL_JUMP = 50
+local BOOST_JUMP = 85
+
+local eggFolder = workspace:FindFirstChild("Eggs")
+local petFolder = workspace:FindFirstChild("Pets")
+local home = workspace:FindFirstChild("Home")
+
+local eggESPEnabled = false
+local riding = false
+local boostEnabled = false
+
+--==================================================
+-- CHARACTER
+--==================================================
+
+local character
+local humanoid
+local root
+
+local function setupCharacter(char)
+	character = char
+	humanoid = char:WaitForChild("Humanoid")
+	root = char:WaitForChild("HumanoidRootPart")
+
+	humanoid.WalkSpeed = NORMAL_SPEED
+	humanoid.JumpPower = NORMAL_JUMP
+end
+
+setupCharacter(player.Character or player.CharacterAdded:Wait())
+
+player.CharacterAdded:Connect(function(char)
+	setupCharacter(char)
+end)
+
+--==================================================
+-- UI
+--==================================================
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "AlfredexRideUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local main = Instance.new("Frame")
+main.Size = UDim2.fromOffset(270, 390)
+main.Position = UDim2.new(0, 20, 0.5, -195)
+main.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+main.BorderSizePixel = 0
+main.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 14)
+corner.Parent = main
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -50, 0, 45)
+title.Position = UDim2.fromOffset(15, 5)
+title.BackgroundTransparency = 1
+title.Text = "ALFREDEX"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.TextSize = 23
+title.Font = Enum.Font.GothamBold
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = main
+
+local close = Instance.new("TextButton")
+close.Size = UDim2.fromOffset(35, 35)
+close.Position = UDim2.new(1, -43, 0, 8)
+close.Text = "×"
+close.TextSize = 25
+close.TextColor3 = Color3.new(1, 1, 1)
+close.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+close.Parent = main
+
+Instance.new("UICorner", close).CornerRadius = UDim.new(0, 8)
+
+local openButton = Instance.new("TextButton")
+openButton.Size = UDim2.fromOffset(120, 42)
+openButton.Position = UDim2.fromOffset(20, 20)
+openButton.Text = "ALFREDEX"
+openButton.TextSize = 18
+openButton.Font = Enum.Font.GothamBold
+openButton.TextColor3 = Color3.new(1, 1, 1)
+openButton.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+openButton.Visible = false
+openButton.Parent = gui
+
+Instance.new("UICorner", openButton).CornerRadius = UDim.new(0, 10)
+
+local function makeButton(text, y)
+	local button = Instance.new("TextButton")
+	button.Size = UDim2.new(1, -30, 0, 42)
+	button.Position = UDim2.fromOffset(15, y)
+	button.Text = text
+	button.TextSize = 15
+	button.Font = Enum.Font.GothamSemibold
+	button.TextColor3 = Color3.new(1, 1, 1)
+	button.BackgroundColor3 = Color3.fromRGB(38, 38, 46)
+	button.AutoButtonColor = true
+	button.Parent = main
+
+	Instance.new("UICorner", button).CornerRadius = UDim.new(0, 9)
+
+	return button
+end
+
+local rideButton = makeButton("🐾  Ride Pet", 60)
+local eggButton = makeButton("🥚  Egg ESP: OFF", 110)
+local nearestButton = makeButton("📍  Nearest Egg", 160)
+local homeButton = makeButton("🏠  Teleport Home", 210)
+local boostButton = makeButton("⚡  Boost: OFF", 260)
+local antiAFKButton = makeButton("💤  Anti-AFK: ON", 310)
+
+--==================================================
+-- CLOSE / OPEN
+--==================================================
+
+close.MouseButton1Click:Connect(function()
+	main.Visible = false
+	openButton.Visible = true
+end)
+
+openButton.MouseButton1Click:Connect(function()
+	main.Visible = true
+	openButton.Visible = false
+end)
+
+--==================================================
+-- PET DETECTION
+--==================================================
+
+local function getPet()
+	if not petFolder then
+		return nil
+	end
+
+	local closest
+	local shortest = math.huge
+
+	for _, obj in ipairs(petFolder:GetChildren()) do
+		local part
+
+		if obj:IsA("BasePart") then
+			part = obj
+		elseif obj:IsA("Model") then
+			part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
+		end
+
+		if part and root then
+			local distance = (root.Position - part.Position).Magnitude
+
+			if distance < shortest then
+				shortest = distance
+				closest = obj
+			end
+		end
+	end
+
+	return closest
+end
+
+--==================================================
+-- RIDE PET
+--==================================================
+
+local weld
+
+local function getPetPart(pet)
+	if not pet then
+		return nil
+	end
+
+	if pet:IsA("BasePart") then
+		return pet
+	end
+
+	if pet:IsA("Model") then
+		return pet.PrimaryPart or pet:FindFirstChildWhichIsA("BasePart")
+	end
+end
+
+local function ridePet()
+	if riding then
+		if weld then
+			weld:Destroy()
+			weld = nil
+		end
+
+		riding = false
+		rideButton.Text = "🐾  Ride Pet"
+		return
+	end
+
+	local pet = getPet()
+	local petPart = getPetPart(pet)
+
+	if not petPart or not root then
+		rideButton.Text = "❌ No Pet Found"
+		task.delay(1.5, function()
+			if rideButton then
+				rideButton.Text = "🐾  Ride Pet"
+			end
+		end)
+		return
+	end
+
+	petPart.CFrame = root.CFrame * CFrame.new(0, -2.5, 0)
+
+	weld = Instance.new("WeldConstraint")
+	weld.Part0 = root
+	weld.Part1 = petPart
+	weld.Parent = root
+
+	riding = true
+	rideButton.Text = "🛑  Dismount"
+end
+
+rideButton.MouseButton1Click:Connect(ridePet)
+
+--==================================================
+-- EGG ESP
+--==================================================
+
+local highlighted = {}
+
+local function clearESP()
+	for _, item in ipairs(highlighted) do
+		if item and item.Parent then
+			item:Destroy()
+		end
+	end
+
+	table.clear(highlighted)
+end
+
+local function createESP()
+	clearESP()
+
+	if not eggFolder then
+		return
+	end
+
+	for _, egg in ipairs(eggFolder:GetChildren()) do
+		local part
+
+		if egg:IsA("BasePart") then
+			part = egg
+		elseif egg:IsA("Model") then
+			part = egg.PrimaryPart or egg:FindFirstChildWhichIsA("BasePart")
+		end
+
+		if part then
+			local highlight = Instance.new("Highlight")
+			highlight.Name = "AlfredexEggESP"
+			highlight.Adornee = egg
+			highlight.FillTransparency = 0.65
+			highlight.OutlineTransparency = 0
+			highlight.Parent = egg
+
+			table.insert(highlighted, highlight)
+		end
+	end
+end
+
+eggButton.MouseButton1Click:Connect(function()
+	eggESPEnabled = not eggESPEnabled
+
+	if eggESPEnabled then
+		eggButton.Text = "🥚  Egg ESP: ON"
+		createESP()
+	else
+		eggButton.Text = "🥚  Egg ESP: OFF"
+		clearESP()
+	end
+end)
+
+--==================================================
+-- NEAREST EGG
+--==================================================
+
+local function getNearestEgg()
+	if not eggFolder or not root then
+		return nil
+	end
+
+	local closest
+	local shortest = math.huge
+
+	for _, egg in ipairs(eggFolder:GetChildren()) do
+		local part
+
+		if egg:IsA("BasePart") then
+			part = egg
+		elseif egg:IsA("Model") then
+			part = egg.PrimaryPart or egg:FindFirstChildWhichIsA("BasePart")
+		end
+
+		if part then
+			local distance = (root.Position - part.Position).Magnitude
+
+			if distance < shortest then
+				shortest = distance
+				closest = part
+			end
+		end
+	end
+
+	return closest, shortest
+end
+
+nearestButton.MouseButton1Click:Connect(function()
+	local egg, distance = getNearestEgg()
+
+	if egg then
+		nearestButton.Text = "📍 " .. math.floor(distance) .. " studs"
+
+		task.delay(2, function()
+			if nearestButton then
+				nearestButton.Text = "📍  Nearest Egg"
+			end
+		end
+	else
+		nearestButton.Text = "❌ No Eggs"
+
+		task.delay(1.5, function()
+			if nearestButton then
+				nearestButton.Text = "📍  Nearest Egg"
+			end
+		end)
+	end
+end)
+
+--==================================================
+-- HOME TELEPORT
+--==================================================
+
+homeButton.MouseButton1Click:Connect(function()
+	if not root or not home then
+		homeButton.Text = "❌ Home Missing"
+
+		task.delay(1.5, function()
+			homeButton.Text = "🏠  Teleport Home"
+		end)
+
+		return
+	end
+
+	local destination
+
+	if home:IsA("BasePart") then
+		destination = home
+	elseif home:IsA("Model") then
+		destination = home.PrimaryPart or home:FindFirstChildWhichIsA("BasePart")
+	end
+
+	if destination then
+		root.CFrame = destination.CFrame + Vector3.new(0, 4, 0)
+	end
+end)
+
+--==================================================
+-- SPEED / JUMP BOOST
+--==================================================
+
+boostButton.MouseButton1Click:Connect(function()
+	boostEnabled = not boostEnabled
+
+	if boostEnabled then
+		boostButton.Text = "⚡  Boost: ON"
+
+		if humanoid then
+			humanoid.WalkSpeed = BOOST_SPEED
+			humanoid.JumpPower = BOOST_JUMP
+		end
+	else
+		boostButton.Text = "⚡  Boost: OFF"
+
+		if humanoid then
+			humanoid.WalkSpeed = NORMAL_SPEED
+			humanoid.JumpPower = NORMAL_JUMP
+		end
+	end
+end)
+
+--==================================================
+-- ANTI-AFK
+--==================================================
+
+local antiAFK = true
+local lastMove = os.clock()
+
+antiAFKButton.MouseButton1Click:Connect(function()
+	antiAFK = not antiAFK
+
+	if antiAFK then
+		antiAFKButton.Text = "💤  Anti-AFK: ON"
+	else
+		antiAFKButton.Text = "💤  Anti-AFK: OFF"
+	end
+end)
+
+UserInputService.InputBegan:Connect(function()
+	lastMove = os.clock()
+end)
+
+task.spawn(function()
+	while task.wait(20) do
+		if antiAFK and os.clock() - lastMove > 20 and humanoid then
+			humanoid.Jump = true
+			lastMove = os.clock()
+		end
+	end
+end)
+
+--==================================================
+-- KEEP BOOST AFTER RESPAWN
+--==================================================
+
+player.CharacterAdded:Connect(function(char)
+	task.wait(1)
+
+	character = char
+	humanoid = char:WaitForChild("Humanoid")
+	root = char:WaitForChild("HumanoidRootPart")
+
+	if boostEnabled then
+		humanoid.WalkSpeed = BOOST_SPEED
+		humanoid.JumpPower = BOOST_JUMP
+	else
+		humanoid.WalkSpeed = NORMAL_SPEED
+		humanoid.JumpPower = NORMAL_JUMP
+	end
+
+	riding = false
+	weld = nil
+	rideButton.Text = "🐾  Ride Pet"
+end)
+
+--==================================================
+-- AUTO REFRESH ESP
+--==================================================
+
+RunService.Heartbeat:Connect(function()
+	if eggESPEnabled and eggFolder then
+		for _, egg in ipairs(eggFolder:GetChildren()) do
+			if not egg:FindFirstChild("AlfredexEggESP") then
+				local highlight = Instance.new("Highlight")
+				highlight.Name = "AlfredexEggESP"
+				highlight.Adornee = egg
+				highlight.FillTransparency = 0.65
+				highlight.Parent = egg
+
+				table.insert(highlighted, highlight)
+			end
+		end
+	end
+end)
+
+print("ALFREDEX RIDE CONTROLLER LOADED")
