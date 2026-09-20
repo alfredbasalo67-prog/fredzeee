@@ -1,183 +1,277 @@
--- ═══════════════════════════════════════
--- ✅ FREDZEEE — FULL WORKING SCRIPT
--- ═══════════════════════════════════════
+-- ╔══════════════════════════════════════╗
+-- ║        FREDZEE — Ride A Pet          ║
+-- ║   Red & White Theme · Clean Design   ║
+-- ╚══════════════════════════════════════╝
 
-local Player = game:GetService("Players").LocalPlayer
-local PlayerGui = Player:WaitForChild("PlayerGui")
+-- Services
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+if not LocalPlayer then return end
 
+-- Cleanup old GUI
+if CoreGui:FindFirstChild("FREDZEE") then CoreGui.FREDZEE:Destroy() end
+
+-- Create ScreenGui
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "fredzeee"
-ScreenGui.Parent = PlayerGui
+ScreenGui.Name = "FREDZEE"
+ScreenGui.Parent = CoreGui
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 -- ═══════════════════════════════════════
--- 📦 MAIN WINDOW
+-- 🟡 MINIMIZED FLOATING BUTTON
 -- ═══════════════════════════════════════
+local MinimizeButton = Instance.new("TextButton")
+MinimizeButton.Name = "MinimizeButton"
+MinimizeButton.Parent = ScreenGui
+MinimizeButton.BackgroundColor3 = Color3.fromRGB(220, 30, 30)
+MinimizeButton.Position = UDim2.new(0.02, 0, 0.5, -30)
+MinimizeButton.Size = UDim2.new(0, 60, 0, 60)
+MinimizeButton.Text = "FZ"
+MinimizeButton.Font = Enum.Font.GothamBold
+MinimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinimizeButton.TextSize = 24
+MinimizeButton.Visible = false
+MinimizeButton.Active = true
+MinimizeButton.Draggable = true
 
+local MinCorner = Instance.new("UICorner")
+MinCorner.CornerRadius = UDim.new(1, 0)
+MinCorner.Parent = MinimizeButton
+
+-- ═══════════════════════════════════════
+-- 📦 MAIN GUI — RED & WHITE, NO OUTER BORDER
+-- ═══════════════════════════════════════
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-MainFrame.BorderColor3 = Color3.fromRGB(255, 200, 40)
-MainFrame.Position = UDim2.new(0.5, -320, 0.5, -180)
-MainFrame.Size = UDim2.new(0, 640, 0, 360)
-MainFrame.ClipsDescendants = true
+MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+MainFrame.Position = UDim2.new(0.5, -160, 0.5, -260)
+MainFrame.Size = UDim2.new(0, 320, 0, 520)
 MainFrame.Active = true
 MainFrame.Draggable = true
 
 local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 16)
+MainCorner.CornerRadius = UDim.new(0, 24)
 MainCorner.Parent = MainFrame
 
-local MainStroke = Instance.new("UIStroke")
-MainStroke.Color = Color3.fromRGB(255, 200, 40)
-MainStroke.Thickness = 2
-MainStroke.Parent = MainFrame
-
--- ═══════════════════════════════════════
--- 🧩 TOP BAR
--- ═══════════════════════════════════════
-
+-- 🔴 TOP BAR — FREDZEE
 local TopBar = Instance.new("Frame")
 TopBar.Name = "TopBar"
 TopBar.Parent = MainFrame
-TopBar.BackgroundColor3 = Color3.fromRGB(22, 22, 35)
-TopBar.Size = UDim2.new(1, 0, 0, 45)
+TopBar.BackgroundColor3 = Color3.fromRGB(220, 30, 30)
+TopBar.Size = UDim2.new(1, 0, 0, 70)
 
 local TopCorner = Instance.new("UICorner")
-TopCorner.CornerRadius = UDim.new(0, 16)
+TopCorner.CornerRadius = UDim.new(0, 24)
 TopCorner.Parent = TopBar
 
-local TitleLabel = Instance.new("TextLabel")
-TitleLabel.Parent = TopBar
-TitleLabel.BackgroundTransparency = 1
-TitleLabel.Position = UDim2.new(0.5, -120, 0, 0)
-TitleLabel.Size = UDim2.new(0, 240, 1, 0)
-TitleLabel.Font = Enum.Font.GothamBold
-TitleLabel.Text = "✨ FREDZEEE — Ride A Pet ✨"
-TitleLabel.TextColor3 = Color3.fromRGB(255, 220, 40)
-TitleLabel.TextSize = 16
+local Title = Instance.new("TextLabel")
+Title.Parent = TopBar
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0.5, -70, 0, 0)
+Title.Size = UDim2.new(0, 140, 1, 0)
+Title.Font = Enum.Font.GothamBold
+Title.Text = "FREDZEE"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 32
 
-local MinimizeButton = Instance.new("TextButton")
-MinimizeButton.Parent = TopBar
-MinimizeButton.BackgroundTransparency = 1
-MinimizeButton.Position = UDim2.new(1, -45, 0, 0)
-MinimizeButton.Size = UDim2.new(0, 35, 1, 0)
-MinimizeButton.Font = Enum.Font.GothamBold
-MinimizeButton.Text = "➖"
-MinimizeButton.TextColor3 = Color3.fromRGB(255, 200, 40)
-MinimizeButton.TextSize = 22
+-- ➖ MINIMIZE BUTTON (Top Right)
+local MinBtn = Instance.new("TextButton")
+MinBtn.Parent = TopBar
+MinBtn.BackgroundTransparency = 1
+MinBtn.Position = UDim2.new(1, -50, 0, 10)
+MinBtn.Size = UDim2.new(0, 40, 0, 50)
+MinBtn.Font = Enum.Font.GothamBold
+MinBtn.Text = "−"
+MinBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinBtn.TextSize = 28
 
--- ═══════════════════════════════════════
--- 📦 SMALLER INSIDE RECTANGLE BOX
--- ═══════════════════════════════════════
-
-local InnerBox = Instance.new("Frame")
-InnerBox.Parent = MainFrame
-InnerBox.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
-InnerBox.BorderColor3 = Color3.fromRGB(255, 200, 40)
-InnerBox.Position = UDim2.new(0.5, -220, 0.5, -110)
-InnerBox.Size = UDim2.new(0, 440, 0, 220)
-InnerBox.ClipsDescendants = true
-
-local InnerCorner = Instance.new("UICorner")
-InnerCorner.CornerRadius = UDim.new(0, 12)
-InnerCorner.Parent = InnerBox
-
-local InnerStroke = Instance.new("UIStroke")
-InnerStroke.Color = Color3.fromRGB(255, 200, 40)
-InnerStroke.Thickness = 2
-InnerStroke.Parent = InnerBox
-
--- ═══════════════════════════════════════
--- 🎯 BUTTONS INSIDE THE BOX
--- ═══════════════════════════════════════
-
+-- 📄 CONTENT AREA
 local ContentBox = Instance.new("Frame")
-ContentBox.Parent = InnerBox
+ContentBox.Parent = MainFrame
 ContentBox.BackgroundTransparency = 1
-ContentBox.Position = UDim2.new(0, 12, 0, 12)
-ContentBox.Size = UDim2.new(1, -24, 1, -24)
+ContentBox.Position = UDim2.new(0, 20, 0, 90)
+ContentBox.Size = UDim2.new(1, -40, 1, -110)
 
-local ContentList = Instance.new("UIListLayout")
-ContentList.Parent = ContentBox
-ContentList.Padding = UDim.new(0, 8)
-ContentList.Spacing = UDim.new(0, 6)
-ContentList.HorizontalAlignment = Enum.HorizontalAlignment.Center
-ContentList.VerticalAlignment = Enum.VerticalAlignment.Top
+local ButtonLayout = Instance.new("UIListLayout")
+ButtonLayout.Parent = ContentBox
+ButtonLayout.Padding = UDim.new(0, 0)
+ButtonLayout.Spacing = UDim.new(0, 12)
+ButtonLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+ButtonLayout.VerticalAlignment = Enum.VerticalAlignment.Top
 
-local function addFeatureButton(name, color)
+-- ═══════════════════════════════════════
+-- 🎯 FEATURE VARIABLES
+-- ═══════════════════════════════════════
+local AutoCherub_Enabled = false
+local AutoBlackhole_Enabled = false
+local AntiAFK_Enabled = false
+local InfJump_Enabled = false
+local NoClip_Enabled = false
+local WalkSpeed = 32
+
+-- ═══════════════════════════════════════
+-- 🔘 BUTTON CREATOR
+-- ═══════════════════════════════════════
+local function CreateButton(name, yPos)
     local btn = Instance.new("TextButton")
     btn.Parent = ContentBox
-    btn.BackgroundColor3 = color
-    btn.Size = UDim2.new(1, 0, 0, 32)
+    btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    btn.BorderSizePixel = 3
+    btn.BorderColor3 = Color3.fromRGB(220, 30, 30)
+    btn.Size = UDim2.new(1, 0, 0, 55)
     btn.Font = Enum.Font.GothamBold
-    btn.Text = name
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.TextSize = 14
-    btn.AutoLocalize = false
+    btn.Text = name .. ": OFF"
+    btn.TextColor3 = Color3.fromRGB(220, 30, 30)
+    btn.TextSize = 18
 
     local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 8)
+    btnCorner.CornerRadius = UDim.new(0, 16)
     btnCorner.Parent = btn
 
+    return btn
+end
+
+-- 📋 CREATE ALL 6 BUTTONS
+local AutoCherubBtn = CreateButton("Auto Get Cherub Egg")
+local AutoBlackholeBtn = CreateButton("Auto Get Blackhole Egg")
+local AntiAFKBtn = CreateButton("Anti AFK")
+local InfJumpBtn = CreateButton("Infinite Jump")
+local SpeedBtn = CreateButton("Speed Changer")
+local TPPenBtn = CreateButton("Auto Teleport to Pen")
+
+-- ═══════════════════════════════════════
+-- 🔄 TOGGLE FUNCTION
+-- ═══════════════════════════════════════
+local function ToggleButton(btn, varName)
     btn.MouseButton1Click:Connect(function()
-        print(name .. " toggled!")
+        _G[varName] = not _G[varName]
+        local isOn = _G[varName]
+        btn.Text = string.gsub(btn.Text, ": .+", isOn and ": ON ✅" or ": OFF")
+        btn.BackgroundColor3 = isOn and Color3.fromRGB(220, 30, 30) or Color3.fromRGB(255, 255, 255)
+        btn.TextColor3 = isOn and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(220, 30, 30)
     end)
 end
 
-addFeatureButton("Auto Black Hole", Color3.fromRGB(120, 40, 200))
-addFeatureButton("Auto TP", Color3.fromRGB(80, 170, 255))
-addFeatureButton("Speed", Color3.fromRGB(255, 200, 40))
-addFeatureButton("Auto Cherub", Color3.fromRGB(255, 150, 180))
-addFeatureButton("Infinite Jump", Color3.fromRGB(80, 200, 120))
+-- Initialize states
+_G.AutoCherub_Enabled = false
+_G.AutoBlackhole_Enabled = false
+_G.AntiAFK_Enabled = false
+_G.InfJump_Enabled = false
 
--- ═══════════════════════════════════════
--- 🖼️ MINIMIZED LOGO BOX
--- ═══════════════════════════════════════
+ToggleButton(AutoCherubBtn, "AutoCherub_Enabled")
+ToggleButton(AutoBlackholeBtn, "AutoBlackhole_Enabled")
+ToggleButton(AntiAFKBtn, "AntiAFK_Enabled")
+ToggleButton(InfJumpBtn, "InfJump_Enabled")
 
-local MinimizeBox = Instance.new("Frame")
-MinimizeBox.Name = "MinimizeBox"
-MinimizeBox.Parent = ScreenGui
-MinimizeBox.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-MinimizeBox.BorderColor3 = Color3.fromRGB(255, 200, 40)
-MinimizeBox.Position = UDim2.new(0.02, 0, 0.5, -70)
-MinimizeBox.Size = UDim2.new(0, 150, 0, 130)
-MinimizeBox.Visible = false
-MinimizeBox.Active = true
-MinimizeBox.Draggable = true
+-- ⚡ SPEED CHANGER
+local SpeedInput = Instance.new("TextBox")
+SpeedInput.Parent = ContentBox
+SpeedInput.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SpeedInput.BorderSizePixel = 3
+SpeedInput.BorderColor3 = Color3.fromRGB(220, 30, 30)
+SpeedInput.Size = UDim2.new(1, 0, 0, 55)
+SpeedInput.Font = Enum.Font.GothamBold
+SpeedInput.Text = "Speed: 32"
+SpeedInput.TextColor3 = Color3.fromRGB(220, 30, 30)
+SpeedInput.TextSize = 18
 
-local MinCorner = Instance.new("UICorner")
-MinCorner.CornerRadius = UDim.new(0, 12)
-MinCorner.Parent = MinimizeBox
+local SpeedCorner = Instance.new("UICorner")
+SpeedCorner.CornerRadius = UDim.new(0, 16)
+SpeedCorner.Parent = SpeedInput
 
-local LogoBox = Instance.new("ImageLabel")
-LogoBox.Parent = MinimizeBox
-LogoBox.BackgroundTransparency = 1
-LogoBox.Position = UDim2.new(0.5, -55, 0.05, 0)
-LogoBox.Size = UDim2.new(0, 110, 0, 90)
-LogoBox.Image = "rbxassetid://13920892146"
-
-local LogoText = Instance.new("TextLabel")
-LogoText.Parent = MinimizeBox
-LogoText.BackgroundTransparency = 1
-LogoText.Position = UDim2.new(0, 0, 0.76, 0)
-LogoText.Size = UDim2.new(1, 0, 0, 25)
-LogoText.Font = Enum.Font.GothamBold
-LogoText.Text = "✨ FREDZEEE — Tap to Open ✨"
-LogoText.TextColor3 = Color3.fromRGB(255, 220, 40)
-LogoText.TextSize = 12
-
--- ═══════════════════════════════════════
--- 🔄 MINIMIZE / OPEN LOGIC
--- ═══════════════════════════════════════
-
-MinimizeButton.MouseButton1Click:Connect(function()
-    MainFrame.Visible = false
-    MinimizeBox.Visible = true
+SpeedInput.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        local num = tonumber(string.match(SpeedInput.Text, "%d+"))
+        if num then
+            WalkSpeed = num
+            SpeedInput.Text = "Speed: " .. num
+            local Char = LocalPlayer.Character
+            if Char and Char:FindFirstChild("Humanoid") then
+                Char.Humanoid.WalkSpeed = num
+            end
+        end
+    end
 end)
 
-MinimizeBox.MouseButton1Click:Connect(function()
-    MinimizeBox.Visible = false
-    MainFrame.Visible = true
+-- 📍 TELEPORT TO PEN
+TPPenBtn.MouseButton1Click:Connect(function()
+    local Char = LocalPlayer.Character
+    if Char and Char:FindFirstChild("HumanoidRootPart") then
+        Char.HumanoidRootPart.CFrame = CFrame.new(10, 5, 120)
+    end
 end)
+
+-- ═══════════════════════════════════════
+-- 🔄 MINIMIZE / RESTORE
+-- ═══════════════════════════════════════
+local IsMinimized = false
+local function ToggleMinimize()
+    IsMinimized = not IsMinimized
+    MainFrame.Visible = not IsMinimized
+    MinimizeButton.Visible = IsMinimized
+end
+
+MinBtn.MouseButton1Click:Connect(ToggleMinimize)
+MinimizeButton.MouseButton1Click:Connect(ToggleMinimize)
+
+-- ═══════════════════════════════════════
+-- 🧠 MAIN LOOP — ALL FEATURES
+-- ═══════════════════════════════════════
+RunService.Heartbeat:Connect(function()
+    local Char = LocalPlayer.Character
+    if not Char then return end
+    local Root = Char:FindFirstChild("HumanoidRootPart")
+    local Humanoid = Char:FindFirstChild("Humanoid")
+    if not Root then return end
+
+    -- 🥚 Auto Cherub Egg
+    if _G.AutoCherub_Enabled then
+        for _, v in pairs(workspace:GetDescendants()) do
+            local name = string.lower(v.Name)
+            if string.find(name, "cherub") or string.find(name, "angel") then
+                local Target = v:IsA("BasePart") and v or v:FindFirstChild("HumanoidRootPart") or v.PrimaryPart
+                if Target then pcall(function() Target.CFrame = Root.CFrame end) end
+            end
+        end
+    end
+
+    -- 🥚 Auto Blackhole Egg
+    if _G.AutoBlackhole_Enabled then
+        for _, v in pairs(workspace:GetDescendants()) do
+            local name = string.lower(v.Name)
+            if string.find(name, "black") and string.find(name, "hole") or string.find(name, "blackhole") then
+                local Target = v:IsA("BasePart") and v or v:FindFirstChild("HumanoidRootPart") or v.PrimaryPart
+                if Target then pcall(function() Target.CFrame = Root.CFrame end) end
+            end
+        end
+    end
+
+    -- 🛡️ Anti AFK
+    if _G.AntiAFK_Enabled then
+        task.spawn(function()
+            pcall(function()
+                Humanoid:Move(Vector3.new(1,0,0))
+                task.wait(0.05)
+                Humanoid:Move(Vector3.new(-1,0,0))
+            end)
+        end)
+    end
+end)
+
+-- 🦘 Infinite Jump
+UserInputService.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if _G.InfJump_Enabled and input.KeyCode == Enum.KeyCode.Space then
+        local Char = LocalPlayer.Character
+        if Char and Char:FindFirstChild("Humanoid") then
+            Char.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end)
+
+print("✅ FREDZEE LOADED! Red & White Design! 🚀")
